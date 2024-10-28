@@ -1,4 +1,4 @@
-# Go, Gin, swag
+# Go, gin, swag
 
 `go mod init go-rest-api`
 
