@@ -14,6 +14,12 @@
 
 `go get -u github.com/swaggo/files`
 
+Need for `swag init`
+
+`echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.bashrc`
+
+`source ~/.bashrc`
+
 `swag init`
 
-`export PATH=$(go env GOPATH)/bin:$PATH`
+`go get -u github.com/gofrs/uuid`

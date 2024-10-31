@@ -24,49 +24,110 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/file/upload": {
-            "post": {
-                "description": "Upload file",
+        "/accounts": {
+            "get": {
+                "description": "get accounts",
                 "consumes": [
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Upload file",
-                "operationId": "file.upload",
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "List accounts",
                 "parameters": [
                     {
-                        "type": "file",
-                        "description": "this is a test file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
+                        "type": "string",
+                        "format": "email",
+                        "description": "name search by q",
+                        "name": "q",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "ok",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Account"
+                            }
                         }
                     },
                     "400": {
-                        "description": "We need ID!!",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/web.APIError"
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
                     "404": {
-                        "description": "Can not find ID",
+                        "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/web.APIError"
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "add by json account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Add an account",
+                "parameters": [
+                    {
+                        "description": "Add account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AddAccount"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     }
                 }
             }
         },
-        "/testapi/get-string-by-int/{some_id}": {
+        "/accounts/{id}": {
             "get": {
                 "description": "get string by ID",
                 "consumes": [
@@ -75,98 +136,205 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Add a new pet to the store",
-                "operationId": "get-string-by-int",
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Show an account",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Some ID",
-                        "name": "some_id",
+                        "description": "Account ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Some ID",
-                        "name": "some_id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/web.Pet"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "ok",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.Account"
                         }
                     },
                     "400": {
-                        "description": "We need ID!!",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/web.APIError"
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
                     "404": {
-                        "description": "Can not find ID",
+                        "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/web.APIError"
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     }
                 }
-            }
-        },
-        "/testapi/get-struct-array-by-string/{some_id}": {
-            "get": {
-                "description": "get struct array by ID",
+            },
+            "delete": {
+                "description": "Delete by account ID",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "operationId": "get-struct-array-by-string",
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Some ID",
-                        "name": "some_id",
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/model.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update by json account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "description": "Update account",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateAccount"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Account"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/images": {
+            "post": {
+                "description": "Upload file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Upload account image",
+                "parameters": [
+                    {
                         "type": "integer",
-                        "description": "Offset",
-                        "name": "offset",
-                        "in": "query",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "limit",
-                        "in": "query",
+                        "type": "file",
+                        "description": "account image",
+                        "name": "file",
+                        "in": "formData",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "ok",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controller.Message"
                         }
                     },
                     "400": {
-                        "description": "We need ID!!",
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/web.APIError"
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     },
                     "404": {
-                        "description": "Can not find ID",
+                        "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/web.APIError"
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
                         }
                     }
                 }
@@ -174,80 +342,111 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "web.APIError": {
+        "controller.Message": {
             "type": "object",
             "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "errorCode": {
-                    "type": "integer"
-                },
-                "errorMessage": {
-                    "type": "string"
+                "message": {
+                    "type": "string",
+                    "example": "message"
                 }
             }
         },
-        "web.Pet": {
+        "httputil.HTTPError": {
             "type": "object",
             "properties": {
-                "category": {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "name": {
-                            "type": "string"
-                        }
-                    }
+                "code": {
+                    "type": "integer",
+                    "example": 400
                 },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "photoUrls": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "status": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/web.Tag"
-                    }
+                "message": {
+                    "type": "string",
+                    "example": "status bad request"
                 }
             }
         },
-        "web.RevValue": {
-            "type": "object",
-            "properties": {
-                "Data": {
-                    "type": "integer"
-                },
-                "Err": {
-                    "type": "integer"
-                },
-                "Status": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "web.Tag": {
+        "model.Account": {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "account name"
+                },
+                "uuid": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 }
+            }
+        },
+        "model.AddAccount": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "account name"
+                }
+            }
+        },
+        "model.UpdateAccount": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "account name"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Description for what is this security definition being used",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BasicAuth": {
+            "type": "basic"
+        },
+        "OAuth2AccessCode": {
+            "type": "oauth2",
+            "flow": "accessCode",
+            "authorizationUrl": "https://example.com/oauth/authorize",
+            "tokenUrl": "https://example.com/oauth/token",
+            "scopes": {
+                "admin": "Grants read and write access to administrative information"
+            }
+        },
+        "OAuth2Application": {
+            "type": "oauth2",
+            "flow": "application",
+            "tokenUrl": "https://example.com/oauth/token",
+            "scopes": {
+                "admin": "Grants read and write access to administrative information",
+                "write": "Grants write access"
+            }
+        },
+        "OAuth2Implicit": {
+            "type": "oauth2",
+            "flow": "implicit",
+            "authorizationUrl": "https://example.com/oauth/authorize",
+            "scopes": {
+                "admin": "Grants read and write access to administrative information",
+                "write": "Grants write access"
+            }
+        },
+        "OAuth2Password": {
+            "type": "oauth2",
+            "flow": "password",
+            "tokenUrl": "https://example.com/oauth/token",
+            "scopes": {
+                "admin": "Grants read and write access to administrative information",
+                "read": "Grants read access",
+                "write": "Grants write access"
             }
         }
     }
@@ -256,11 +455,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080/swagger/index.html",
-	BasePath:         "/v1",
+	Host:             "localhost:8080",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Swagger Example API",
-	Description:      "This is a sample server.",
+	Description:      "This is a sample server celler server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
