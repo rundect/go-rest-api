@@ -35,3 +35,9 @@
 `go get -u gorm.io/gorm`
 
 `go get -u gorm.io/driver/postgres`
+
+## Create postgres container
+
+[https://docs.docker.com/engine/install/ubuntu/]
+
+[https://github.com/LessonDump/DockerPostgresPgAdmin/blob/master/docker-compose.yaml]
