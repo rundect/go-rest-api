@@ -3,6 +3,9 @@ package main
 import (
 	"errors"
 	"net/http"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"go-rest-api/controller"
@@ -12,6 +15,8 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+var db *gorm.DB
 
 //	@title			Swagger Example API
 //	@version		1.0
@@ -55,8 +60,12 @@ import (
 //	@tokenUrl								https://example.com/oauth/token
 //	@authorizationUrl						https://example.com/oauth/authorize
 //	@scope.admin							Grants read and write access to administrative information
-
 func main() {
+	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432"
+	_, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    if err != nil {
+        log.Fatalf("Error when connect database, the error is '%v'", err)
+    }
 	r := gin.Default()
 
 	c := controller.NewController()
@@ -86,3 +95,7 @@ func auth() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func GetDB() *gorm.DB {
+	 return db 
+	}

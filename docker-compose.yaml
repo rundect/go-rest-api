@@ -8,10 +8,6 @@ services:
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
             PGDATA: /var/lib/postgresql/data/pgdata
 
-        volumes:
-            - ./initdb:/docker-entrypoint-initdb.d
-            - .:/var/lib/postgresql/data
-
         ports:
             - ${POSTGRES_PORT:-5432}:5432
 

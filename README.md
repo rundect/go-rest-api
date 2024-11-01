@@ -30,14 +30,32 @@
 
 `go get -u github.com/gofrs/uuid`
 
+## Create postgres container
+
+[https://docs.docker.com/engine/install/ubuntu/]
+
+[https://github.com/LessonDump/DockerPostgresPgAdmin/blob/master/docker-compose.yaml]
+
 ## Install gorm
 
 `go get -u gorm.io/gorm`
 
 `go get -u gorm.io/driver/postgres`
 
-## Create postgres container
+[https://github.com/YugabyteDB-Samples/orm-examples/blob/master/golang/gorm/src/controller/base.go]
 
-[https://docs.docker.com/engine/install/ubuntu/]
+[https://gist.github.com/mashingan/4212d447f857cfdfbbba4f5436b779ac]
 
-[https://github.com/LessonDump/DockerPostgresPgAdmin/blob/master/docker-compose.yaml]
+## Install golang-migrate
+
+[https://github.com/golang-migrate/migrate/blob/master/database/postgres/TUTORIAL.md]
+
+`go get github.com/golang-migrate/migrate/v4`
+
+`export POSTGRESQL_URL='postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable'`
+
+[https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md]
+
+[https://www.geeksforgeeks.org/how-to-install-golang-migrate-on-ubuntu]
+
+`migrate create -ext sql -dir migrations -seq create_users_table`
