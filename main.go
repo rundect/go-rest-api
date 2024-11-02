@@ -62,10 +62,12 @@ var db *gorm.DB
 //	@scope.admin							Grants read and write access to administrative information
 func main() {
 	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432"
+
 	_, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
         log.Fatalf("Error when connect database, the error is '%v'", err)
     }
+	
 	r := gin.Default()
 
 	c := controller.NewController()

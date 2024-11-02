@@ -46,16 +46,16 @@
 
 [https://gist.github.com/mashingan/4212d447f857cfdfbbba4f5436b779ac]
 
-## Install golang-migrate
+## Install atlas
 
-[https://github.com/golang-migrate/migrate/blob/master/database/postgres/TUTORIAL.md]
+[https://atlasgo.io/guides/orms/gorm/standalone]
 
-`go get github.com/golang-migrate/migrate/v4`
+`go get -u ariga.io/atlas-provider-gorm`
 
-`export POSTGRESQL_URL='postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable'`
+`go get -u ariga.io/atlas-provider-gorm/gormschema`
 
-[https://github.com/golang-migrate/migrate/blob/master/cmd/migrate/README.md]
+`atlas schema inspect --env gorm --url "env://src"`
 
-[https://www.geeksforgeeks.org/how-to-install-golang-migrate-on-ubuntu]
+`atlas migrate diff --env gorm`
 
-`migrate create -ext sql -dir migrations -seq create_users_table`
+`atlas migrate apply --url "postgres://postgres:postgres@:5432/postgres?sslmode=disable"`
