@@ -5,7 +5,6 @@ go 1.23.2
 require (
 	ariga.io/atlas-provider-gorm v0.5.0
 	github.com/gin-gonic/gin v1.10.0
-	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.4
