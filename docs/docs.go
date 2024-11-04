@@ -282,72 +282,18 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/accounts/{id}/images": {
-            "post": {
-                "description": "Upload file",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "accounts"
-                ],
-                "summary": "Upload account image",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "account image",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Message"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
-        "controller.Message": {
+        "gorm.DeletedAt": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "message"
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
                 }
             }
         },
@@ -367,6 +313,12 @@ const docTemplate = `{
         "model.Account": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
                 "id": {
                     "type": "integer",
                     "format": "int64",
@@ -375,6 +327,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "account name"
+                },
+                "updatedAt": {
+                    "type": "string"
                 },
                 "uuid": {
                     "type": "string",

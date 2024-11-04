@@ -63,11 +63,12 @@ var db *gorm.DB
 func main() {
 	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432"
 
-	_, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
         log.Fatalf("Error when connect database, the error is '%v'", err)
     }
-	
+	controller.DB = *db
+
 	r := gin.Default()
 
 	c := controller.NewController()
@@ -81,7 +82,7 @@ func main() {
 			accounts.POST("", c.AddAccount)
 			accounts.DELETE(":id", c.DeleteAccount)
 			accounts.PATCH(":id", c.UpdateAccount)
-			accounts.POST(":id/images", c.UploadAccountImage)
+			// accounts.POST(":id/images", c.UploadAccountImage)
 		}
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

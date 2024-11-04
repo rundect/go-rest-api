@@ -1,15 +1,18 @@
 package controller
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"go-rest-api/httputil"
 	"go-rest-api/model"
 )
+
+var DB gorm.DB
 
 // ShowAccount godoc
 //
@@ -26,17 +29,11 @@ import (
 //	@Router			/accounts/{id} [get]
 func (c *Controller) ShowAccount(ctx *gin.Context) {
 	id := ctx.Param("id")
-	aid, err := strconv.Atoi(id)
-	if err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	account, err := model.AccountOne(aid)
-	if err != nil {
-		httputil.NewError(ctx, http.StatusNotFound, err)
-		return
-	}
-	ctx.JSON(http.StatusOK, account)
+	aid, _ := strconv.Atoi(id)
+
+	var user = model.Account{ID: aid}
+	DB.First(&user)
+	ctx.JSON(http.StatusOK, user)
 }
 
 // ListAccounts godoc
@@ -53,12 +50,8 @@ func (c *Controller) ShowAccount(ctx *gin.Context) {
 //	@Failure		500	{object}	httputil.HTTPError
 //	@Router			/accounts [get]
 func (c *Controller) ListAccounts(ctx *gin.Context) {
-	q := ctx.Request.URL.Query().Get("q")
-	accounts, err := model.AccountsAll(q)
-	if err != nil {
-		httputil.NewError(ctx, http.StatusNotFound, err)
-		return
-	}
+	var accounts []model.Account
+	DB.Find(&accounts)
 	ctx.JSON(http.StatusOK, accounts)
 }
 
@@ -76,24 +69,11 @@ func (c *Controller) ListAccounts(ctx *gin.Context) {
 //	@Failure		500		{object}	httputil.HTTPError
 //	@Router			/accounts [post]
 func (c *Controller) AddAccount(ctx *gin.Context) {
-	var addAccount model.AddAccount
-	if err := ctx.ShouldBindJSON(&addAccount); err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	if err := addAccount.Validation(); err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	account := model.Account{
-		Name: addAccount.Name,
-	}
-	lastID, err := account.Insert()
-	if err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	account.ID = lastID
+	var Account model.Account
+	account := ctx.ShouldBindJSON(&Account)
+
+	DB.Create(&model.Account{Name: Account.Name})
+
 	ctx.JSON(http.StatusOK, account)
 }
 
@@ -118,20 +98,23 @@ func (c *Controller) UpdateAccount(ctx *gin.Context) {
 		httputil.NewError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	var updateAccount model.UpdateAccount
-	if err := ctx.ShouldBindJSON(&updateAccount); err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	account := model.Account{
-		ID:   aid,
-		Name: updateAccount.Name,
-	}
-	err = account.Update()
-	if err != nil {
-		httputil.NewError(ctx, http.StatusNotFound, err)
-		return
-	}
+	var Account model.Account
+	account := ctx.ShouldBindJSON(&Account)
+	// var updateAccount model.UpdateAccount
+	// if err := ctx.ShouldBindJSON(&updateAccount); err != nil {
+	// 	httputil.NewError(ctx, http.StatusBadRequest, err)
+	// 	return
+	// }
+	// account := model.Account{
+	// 	ID:   aid,
+	// 	Name: updateAccount.Name,
+	// }
+	// err = account.Update()
+	// if err != nil {
+	// 	httputil.NewError(ctx, http.StatusNotFound, err)
+	// 	return
+	// }
+	DB.Model(&Account).Where("id", aid).Update("Name", Account.Name)
 	ctx.JSON(http.StatusOK, account)
 }
 
@@ -155,38 +138,12 @@ func (c *Controller) DeleteAccount(ctx *gin.Context) {
 		httputil.NewError(ctx, http.StatusBadRequest, err)
 		return
 	}
-	err = model.Delete(aid)
-	if err != nil {
-		httputil.NewError(ctx, http.StatusNotFound, err)
-		return
-	}
+	// err = model.Delete(aid)
+	// if err != nil {
+	// 	httputil.NewError(ctx, http.StatusNotFound, err)
+	// 	return
+	// }
+	var Account model.Account
+	DB.Unscoped().Delete(&Account, aid)
 	ctx.JSON(http.StatusNoContent, gin.H{})
-}
-
-// UploadAccountImage godoc
-//
-//	@Summary		Upload account image
-//	@Description	Upload file
-//	@Tags			accounts
-//	@Accept			multipart/form-data
-//	@Produce		json
-//	@Param			id		path		int		true	"Account ID"
-//	@Param			file	formData	file	true	"account image"
-//	@Success		200		{object}	controller.Message
-//	@Failure		400		{object}	httputil.HTTPError
-//	@Failure		404		{object}	httputil.HTTPError
-//	@Failure		500		{object}	httputil.HTTPError
-//	@Router			/accounts/{id}/images [post]
-func (c *Controller) UploadAccountImage(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	file, err := ctx.FormFile("file")
-	if err != nil {
-		httputil.NewError(ctx, http.StatusBadRequest, err)
-		return
-	}
-	ctx.JSON(http.StatusOK, Message{Message: fmt.Sprintf("upload complete userID=%d filename=%s", id, file.Filename)})
 }
