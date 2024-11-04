@@ -26,10 +26,6 @@
 
 `swag init`
 
-## Install other packages
-
-`go get -u github.com/gofrs/uuid`
-
 ## Create postgres container
 
 [https://docs.docker.com/engine/install/ubuntu/]
